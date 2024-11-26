@@ -1,0 +1,12 @@
+awk 'BEGIN { OFS="\t" }
+{
+    # Change position 0 to 1
+    if ($2 == 0) {
+        $2 = 1
+    }
+    # Replace / with | in genotype fields
+    for (i = 10; i <= NF; i++) {
+        gsub("/", "|", $i)
+    }
+    print
+}' body.vcf > data_modified.vcf
