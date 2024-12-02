@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=29
 #SBATCH --partition=hugemem-avx2,orion,hugemem   # Partition name
 #SBATCH --mem=100G                     # 400 Memory required per node
-#SBATCH --exclude=cn-14,cn-11,cn-1
+#SBATCH --exclude=cn-14,cn-11
 
 module load Julia/1.10.0-linux-x86_64
 #module load Python/3.7.4-GCCcore-8.3.0  
@@ -58,23 +58,25 @@ if [ -e /mnt/project/SimData/xyBnG/tskit_50/founder_files.tar.gz ]; then
     mkdir -p tskit_50
     $RSYNC /mnt/project/SimData/xyBnG/tskit_50/founder_files.tar.gz ./tskit_50
     tar -xzvf ./tskit_50/founder_files.tar.gz -C ./tskit_50
+        echo "files are zippd, moved and here"
+
 else
     if [ -e /mnt/project/SimData/xyBnG/tskit_50/BosTau.lmp ]; then
         tar -cvf - -C /mnt/project/SimData/xyBnG/tskit_50/ BosTau.lmp BosTau.xy desc.txt | pigz --fast > /mnt/project/SimData/xyBnG/tskit_50/founder_files.tar.gz
         $RSYNC /mnt/project/SimData/xyBnG/tskit_50/founder_files.tar.gz ./tskit_50
         tar -xzvf ./tskit_50/founder_files.tar.gz -C ./tskit_50
+
+        echo "files are zippd, moved and here"
+
     else
         echo "No founder simulation done, rerunning it"
     fi
 fi
 
-ls 
-echo "files are zippd, moved and here"
-
 
 export JULIA_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-julia --threads ${SLURM_CPUS_PER_TASK}  /mnt/users/odwa/paper-2/xyBnG_phased/running_sim.jl 
+julia --threads ${SLURM_CPUS_PER_TASK}  /mnt/users/odwa/IBD_OCS/xyBnG_phased/running_sim.jl
 
 
 #cp rst/cattle $HOME/paper-2/xyBnG_phased

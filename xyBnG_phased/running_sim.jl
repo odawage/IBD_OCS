@@ -1,4 +1,4 @@
-
+           
 using Distributed, ClusterManagers
 using Base.Threads
 using Revise
@@ -17,7 +17,7 @@ using xyBnG
 
 
 using PyCall,CSV,DataFrames, Mmap,Serialization,VCFTools,xyBnG 
-include("/mnt/users/odwa/paper-2/xyBnG_phased/IBD_seg.jl")    
+include("/mnt/users/odwa/IBD_OCS/xyBnG_phased/IBD_seg.jl")    
 
 #lock = ReentrantLock()
 #include("/mnt/users/odwa/paper-2/xyBnG_phased/phased_matrix.jl")

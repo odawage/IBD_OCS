@@ -16,23 +16,23 @@ import xyBnG.Breeding: phenotype!, Predict!, Select, reproduce!, TM1997, TM2024
 import xyBnG.Founder: ts_base, uniq, sample_xy, macs_base
 import xyBnG.RS: nrm, irm, grm, xirm
 
-include("/mnt/users/odwa/paper-2/xyBnG_phased/phased_matrix_v2.jl")
+include("/mnt/users/odwa/IBD_OCS/xyBnG_phased/phased_matrix_v2.jl")
 
 
 function IBD_seg(;
     data = "rst",
     baseDir = "tskit_50",
-    testDir = "cattle_test",
+    testDir = "cattle_50",
     species = Cattle(5_000),
     trait = Trait("growth", 0.25, 10_000),
     nchp = 50_000,
     nref = 10_000,
-    nrng = 5,
-    nsel = 5,
+    nrng = 10,
+    nsel = 10,
     plan = Plan(100, 100, 400), #Plan(25, 50, 200) Plan(12, 24, 96)
     fixed = ["grt"],
     dF = 0.005, #0.022 0.011
-    nrpt = 5,
+    nrpt = 50,
     keep = true
     )
 
@@ -81,7 +81,7 @@ function IBD_seg(;
 
     fix_header(fxy)
      # "agocs","ggocs","pgocs_0.5","pgocs_01","pgocs_05"
-    schemes = ["pgocs_10"] # 
+    schemes = ["iiocs", "ggocs","pgocs_0.5","pgocs_01","pgocs_05","pgocs_10"] # 
 
     # toxy = Conn.TS.toxy
     # isfile("$base/$sname.xy") || toxy(base)
@@ -144,8 +144,16 @@ function IBD_seg(;
                 occursin(Regex("^$(tag)"), f) && rm("$test/$f", force=true)
             end
         end
+
+        open("$test/scenario.par", "a") do io
+            println(io, "Ended: ", time())
+            cmd ="for file in *$tag-*; do pigz \$file; done" 
+            
+            run(`bash -c $cmd`)
+
     end
     open("$test/scenario.par", "a") do io
         println(io, "Ended: ", time())
+        
     end
 end

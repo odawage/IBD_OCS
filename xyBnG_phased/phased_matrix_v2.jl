@@ -36,7 +36,7 @@ Calls the phasedibd function to find the IBD segments
     vcf = 
 
 """
- function generate_seg(chr::Int64, vcf::AbstractString, path::AbstractString, length::Float64)
+ function generate_seg(chr::Int64, vcf::AbstractString, path::AbstractString, l_cm::Float64)
     isdir("$path/segtemp") || mkdir("$path/segtemp")
     VCFTools.filter_chr("$path/$vcf", chr, des="$path/segtemp/$chr.vcf")
 
@@ -48,7 +48,7 @@ Calls the phasedibd function to find the IBD segments
     import unittest
     import phasedibd as ibd
     
-    length = $length
+    l_cm = $l_cm
     path = $path
     chr = str($chr)
 
@@ -72,7 +72,7 @@ Calls the phasedibd function to find the IBD segments
     # This means that technically if you have phased data you should not get phasing errors. 
     # I've only That functinon on unphased data and  not found a difference in overlapped segments . 
     
-    ibd_results = tpbwt.compute_ibd(haplotypes, L_m=20, L_f=length, segments_out_path=TEST_DATA_PATH, use_phase_correction=False, verbose=False)
+    ibd_results = tpbwt.compute_ibd(haplotypes, L_m=20, L_f=l_cm, segments_out_path=TEST_DATA_PATH, use_phase_correction=False, verbose=False)
     
     #, use_phase_correction=TRUE
     """
@@ -201,9 +201,12 @@ function prm(test::AbstractString, bar::AbstractString, xy::AbstractString, lmp:
     Conn.xy.tovcf("$xy", "$test/$bar.lmp", "$test/$bar.vcf")
 
     file_lock = ReentrantLock()
+    
         Threads.@threads for chr in 1:29 
+            local_l_cm = l_cm 
+
             lock(file_lock) do
-                generate_seg(chr, "$bar.vcf", "$test", length)
+                generate_seg(chr, "$bar.vcf", "$test", local_l_cm)
             end
                 Splice("$test/segtemp/$chr.csv","$test/segtemp/$chr.seg")  
         end
@@ -250,7 +253,7 @@ function pgocs(test, foo, bar, lmp, nrng, ngn, trait, fixed, plan, dF, l)
 
         @info "  - Generating segments"
         
-        g22 =  prm(test, bar, "$xy-sub", lmp,  l)
+        g22 =  prm(test, bar, "$xy-sub", lmp, l)
 
         if ign == 1 
             F0 =  mean(diag(g22) ) -1
