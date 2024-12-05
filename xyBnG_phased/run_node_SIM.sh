@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1                  # Number of tasks (cores)
 #SBATCH --cpus-per-task=29
 #SBATCH --partition=hugemem-avx2,orion,hugemem   # Partition name
-#SBATCH --mem=100G                     # 400 Memory required per node
+#SBATCH --mem=170G                     # 400 Memory required per node
 #SBATCH --exclude=cn-14,cn-11
 
 module load Julia/1.10.0-linux-x86_64
@@ -58,7 +58,8 @@ if [ -e /mnt/project/SimData/xyBnG/tskit_50/founder_files.tar.gz ]; then
     mkdir -p tskit_50
     $RSYNC /mnt/project/SimData/xyBnG/tskit_50/founder_files.tar.gz ./tskit_50
     tar -xzvf ./tskit_50/founder_files.tar.gz -C ./tskit_50
-        echo "files are zippd, moved and here"
+
+    echo "files are zippd, moved and here"
 
 else
     if [ -e /mnt/project/SimData/xyBnG/tskit_50/BosTau.lmp ]; then

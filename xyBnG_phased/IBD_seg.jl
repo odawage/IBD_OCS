@@ -126,7 +126,7 @@ function IBD_seg(;
                     F0 = mean(diag(G[ids,ids]))
                 elseif first(scheme) == 'g'
                     G = grm(xy, lmp.chip, lmp.frq) 
-                    F0 = mean(diag(G[ids,ids]))
+                    F0 = mean(diag(G[ids,ids]))-1
                 else
                     mid = size(ped, 1)
                     G = irm(xy, lmp.chip, mid+1-length(ids):mid) 
@@ -139,17 +139,15 @@ function IBD_seg(;
             summary = Sum.xysum("$test/$bar.ped", "$test/$bar.xy", lmp, trait)
             Sum.savesum("$test/summary.ser", summary)
         end
+
         if !keep
             for f in readdir("$test")
                 occursin(Regex("^$(tag)"), f) && rm("$test/$f", force=true)
             end
         end
 
-        open("$test/scenario.par", "a") do io
-            println(io, "Ended: ", time())
-            cmd ="for file in *$tag-*; do pigz \$file; done" 
-            
-            run(`bash -c $cmd`)
+        cmd ="for file in *$testDir/$tag-*; do pigz \$file; done" 
+        run(`bash -c $cmd`)
 
     end
     open("$test/scenario.par", "a") do io
